@@ -4,13 +4,17 @@
   "description": "FJ-Tech Solutions - Intelligent AI Command Center",
   "main": "server.js",
   "scripts": {
-    "dev": "node backend/server.js",
-    "start": "node backend/server.js"
+    "dev": "next dev",
+    "start": "next start",
+    "build": "next build"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "cors": "^2.8.5",
     "dotenv": "^18.0.9",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }
