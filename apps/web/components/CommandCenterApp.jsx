@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Icon } from './Icons';
+import { Icon, BrandLogo } from './Icons';
 import { OverviewView, VoiceStudioView, ChatbotStudioView, PlaygroundView, WorkspacesView, BrandingStudioView, SecondaryViews } from './Studios';
 /* ==========================================================================
    FJ-TECH | INTELLIGENT AI COMMAND CENTER — NEXT.JS 15 COMPONENT SHELL
@@ -465,9 +465,9 @@ function CommandCenterApp() {
               onClick={() => handleNavigate('branding')}
               className="cursor-pointer p-2.5 rounded-xl bg-white/5 hover:bg-white/10 flex items-center gap-2.5 transition"
             >
-              <img
+              <BrandLogo
                 src={activeTenant.logoUrl}
-                alt={activeTenant.brandName}
+                name={activeTenant.brandName}
                 className="w-8 h-8 rounded-lg object-cover shrink-0"
               />
               {!sidebarCollapsed && (
@@ -533,9 +533,9 @@ function CommandCenterApp() {
             {/* Prominent Client Workspace Switcher */}
             <div className="flex items-center gap-2 p-1 pl-2.5 rounded-xl fj-subcard border border-slate-200 dark:border-white/15">
               {activeTenant && (
-                <img
+                <BrandLogo
                   src={activeTenant.logoUrl}
-                  alt={activeTenant.brandName}
+                  name={activeTenant.brandName}
                   className="w-6 h-6 rounded-md object-cover shrink-0"
                 />
               )}

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Icon, Sparkline } from './Icons';
+import { Icon, Sparkline, BrandLogo } from './Icons';
 /* ==========================================================================
    FJ-TECH | INTELLIGENT AI COMMAND CENTER — FEATURE STUDIOS (views.js)
    ========================================================================== */
@@ -374,9 +374,9 @@ function OverviewView({
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <img
+                      <BrandLogo
                         src={t.logoUrl}
-                        alt={t.brandName}
+                        name={t.brandName}
                         className="w-9 h-9 rounded-lg object-cover border border-slate-200 dark:border-white/10 shrink-0"
                       />
                       <div className="min-w-0">
@@ -1626,9 +1626,9 @@ function ChatbotStudioView({
             {/* Branded Widget Header */}
             <div className="brand-gradient p-4 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img
+                <BrandLogo
                   src={activeTenant?.logoUrl}
-                  alt={activeTenant?.brandName}
+                  name={activeTenant?.brandName}
                   className="w-10 h-10 rounded-xl object-cover border-2 border-white/30 bg-slate-900"
                 />
                 <div>
@@ -1669,8 +1669,9 @@ function ChatbotStudioView({
                   </div>
                 ) : (
                   <div key={m.id} className="flex items-start gap-2.5">
-                    <img
+                    <BrandLogo
                       src={activeTenant?.logoUrl}
+                      name={activeTenant?.brandName}
                       alt="Bot"
                       className="w-7 h-7 rounded-lg object-cover mt-1 shrink-0"
                     />
@@ -1887,8 +1888,9 @@ function ChatbotStudioView({
             </span>
             <div className="my-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
               <div className="brand-gradient p-4 text-white flex items-center gap-3">
-                <img
+                <BrandLogo
                   src={activeTenant?.logoUrl}
+                  name={activeTenant?.brandName}
                   alt="Logo"
                   className="w-9 h-9 rounded-lg object-cover bg-slate-900"
                 />
@@ -2302,9 +2304,9 @@ function WorkspacesView({
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3.5">
-                    <img
+                    <BrandLogo
                       src={tenant.logoUrl}
-                      alt={tenant.brandName}
+                      name={tenant.brandName}
                       className="w-13 h-13 rounded-2xl object-cover border border-slate-200 dark:border-white/15"
                     />
                     <div>
@@ -2628,9 +2630,9 @@ function BrandingStudioView({ activeTenant, onBrandingSaved, showToast }) {
               style={{ background: `linear-gradient(135deg, ${primaryColor}, ${accentColor})` }}
             >
               <div className="flex items-center gap-4">
-                <img
+                <BrandLogo
                   src={logoUrl}
-                  alt={brandName}
+                  name={brandName}
                   className="w-14 h-14 rounded-2xl object-cover border-2 border-white/40 bg-slate-900 shadow"
                 />
                 <div>
@@ -2742,7 +2744,7 @@ function SecondaryViews({
             return (
               <div key={t.id} className="fj-card p-5 space-y-3">
                 <div className="flex items-center gap-3">
-                  <img src={t.logoUrl} alt={t.brandName} className="w-10 h-10 rounded-xl object-cover" />
+                  <BrandLogo src={t.logoUrl} name={t.brandName} className="w-10 h-10 rounded-xl object-cover" />
                   <div>
                     <h3 className="text-sm font-extrabold">{t.brandName}</h3>
                     <span className="text-xs font-mono text-emerald-600 font-bold">

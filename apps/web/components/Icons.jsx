@@ -231,3 +231,36 @@ export function Sparkline({ data = [30, 45, 38, 60, 52, 75, 90], color = '#635BF
   );
 }
 
+
+/**
+ * A business logo that never renders <img src="">. With no URL, or if the image fails to load,
+ * it shows the business's initials instead.
+ */
+export function BrandLogo({ src, name = '', alt, className = '' }) {
+  const [failedSrc, setFailedSrc] = React.useState(null);
+  const url = typeof src === 'string' ? src.trim() : '';
+
+  if (url && failedSrc !== url) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- tenant logos come from arbitrary URLs
+      <img src={url} alt={alt ?? name} className={className} onError={() => setFailedSrc(url)} />
+    );
+  }
+
+  const initials =
+    name
+      .split(/\s+/)
+      .filter((w) => /[a-z0-9]/i.test(w))
+      .slice(0, 2)
+      .map((w) => w[0].toUpperCase())
+      .join('') || '?';
+  return (
+    <span
+      role="img"
+      aria-label={alt ?? name}
+      className={`${className} inline-flex items-center justify-center bg-slate-200 text-slate-700 dark:bg-white/15 dark:text-white font-bold text-xs select-none`}
+    >
+      {initials}
+    </span>
+  );
+}
