@@ -327,9 +327,12 @@ const INTENT_DEFINITIONS = {
     priority: 'P0',
     phrases: [
       { p: /i have (an? )?(emergency|crisis|life-threatening|dangerous)/i, w: 18 },
-      { p: /(emergency|sos|help me|save me|i'?m in danger)/i, w: 16 },
+      // "help me" on its own is not an emergency ("can you help me choose a plan?").
+      { p: /(emergency|\bsos\b|save me|i'?m in danger|please help( me)? (now|quickly|asap|immediately))/i, w: 16 },
       { p: /someone (needs to|has to|must) (call|help|come|respond) (me )?(urgently|immediately|right now|now)/i, w: 16 },
-      { p: /(gas leak|fire|flooding|flood|water leak|electrical|electrocution|injury|injured|accident|medical emergency)/i, w: 18 },
+      // Hazards described as happening, not product words ("fire alarm", "electrical panel").
+      { p: /(gas leak|smell(s|ing)? (of )?gas|carbon monoxide|(house|kitchen|building|car) (is )?on fire|caught fire|there'?s a fire|fire (in|at) (my|the|our)|flooding|flooded|water (is )?(pouring|everywhere|leaking)|burst pipe|sparking|sparks (coming|flying)|electrocut\w*|burning smell|smoke (is )?coming)/i, w: 18 },
+      { p: /(injur(y|ed)|accident|medical emergency|bleeding (a lot|heavily|badly|won'?t stop|that won'?t stop)|(is|are|keeps?) bleeding|can'?t breathe|cannot breathe|trouble breathing|chest pain|unconscious|passed out|severe (pain|swelling)|knocked out (a |my |his |her )?tooth)/i, w: 18 },
       { p: /this is (a |an )?(serious |real )?(emergency|crisis|life-threatening)/i, w: 18 },
       { p: /connect me (with someone|to someone|immediately|right now|urgently)/i, w: 14 },
       { p: /need (immediate|urgent|emergency) (help|assistance|support|response)/i, w: 16 },

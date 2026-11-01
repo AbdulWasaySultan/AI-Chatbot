@@ -1,98 +1,125 @@
 /* ==========================================================================
-   FJ-TECH | INTELLIGENT AI COMMAND CENTER — DESIGN SYSTEM (styles.css)
+   FJ-TECH | AI COMMAND CENTER — GLOBAL STYLES
+   Tailwind CSS is compiled at build time (previously loaded from a CDN at runtime).
    ========================================================================== */
 
-:root {
-  /* Dynamic Client White-Label Tokens (Updated via Branding Studio / Tenant Switch) */
-  --brand-primary: #635BFF;
-  --brand-accent: #21C8D8;
+@import 'tailwindcss';
 
-  /* FJ-Tech Core Palette (Light Mode Default) */
-  --bg-canvas: #F7F8FC;
-  --bg-surface: #FFFFFF;
-  --bg-subtle: #F1F3F9;
-  --bg-navy: #10152A;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
-  --border-subtle: #E2E8F0;
-  --border-strong: #CBD5E1;
-  --shadow-card: 0 1px 3px rgba(16, 21, 42, 0.04), 0 4px 12px rgba(16, 21, 42, 0.03);
-  --shadow-elevated: 0 10px 30px -5px rgba(16, 21, 42, 0.08), 0 4px 12px -2px rgba(16, 21, 42, 0.04);
+/* Scan the shared component folder as well as app/. */
+@source '../frontend';
+
+/* Dark mode is toggled with the `dark` class on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* Tailwind v3 defaults the UI was built against. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :root {
+    /* Dynamic Client White-Label Tokens (Updated via Branding Studio / Tenant Switch) */
+    --brand-primary: #635BFF;
+    --brand-accent: #21C8D8;
+
+    /* FJ-Tech Core Palette (Light Mode Default) */
+    --bg-canvas: #F7F8FC;
+    --bg-surface: #FFFFFF;
+    --bg-subtle: #F1F3F9;
+    --bg-navy: #10152A;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+    --border-subtle: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --shadow-card: 0 1px 3px rgba(16, 21, 42, 0.04), 0 4px 12px rgba(16, 21, 42, 0.03);
+    --shadow-elevated: 0 10px 30px -5px rgba(16, 21, 42, 0.08), 0 4px 12px -2px rgba(16, 21, 42, 0.04);
+  }
+
+  html.dark {
+    --bg-canvas: #0B0F1E;
+    --bg-surface: #10152A;
+    --bg-subtle: #161D38;
+    --bg-navy: #090C18;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.28);
+    --shadow-elevated: 0 16px 36px -6px rgba(0, 0, 0, 0.45);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    overflow-x: hidden;
+  }
 }
 
-html.dark {
-  --bg-canvas: #0B0F1E;
-  --bg-surface: #10152A;
-  --bg-subtle: #161D38;
-  --bg-navy: #090C18;
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.28);
-  --shadow-elevated: 0 16px 36px -6px rgba(0, 0, 0, 0.45);
-}
+@layer components {
+  /* Surface & Card Primitives */
+  .fj-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+    border-radius: 1rem;
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.18s ease;
+  }
 
-* {
-  box-sizing: border-box;
-}
+  .fj-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--border-strong);
+  }
 
-body {
-  margin: 0;
-  background-color: var(--bg-canvas);
-  color: var(--text-primary);
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  overflow-x: hidden;
-}
+  .fj-subcard {
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.75rem;
+  }
 
-/* Surface & Card Primitives */
-.fj-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-card);
-  border-radius: 1rem;
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.18s ease;
-}
+  /* Deep Navy Command Surfaces (Used for AI Voice Orb, Playground & Hero Docks) */
+  .fj-navy-surface {
+    background: linear-gradient(145deg, #10152A 0%, #161D38 100%);
+    color: #F8FAFC;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+  }
 
-.fj-card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-elevated);
-  border-color: var(--border-strong);
-}
+  /* Dynamic Client Brand Accents */
+  .brand-gradient {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+  }
 
-.fj-subcard {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
-}
+  .brand-primary-bg {
+    background-color: var(--brand-primary);
+  }
 
-/* Deep Navy Command Surfaces (Used for AI Voice Orb, Playground & Hero Docks) */
-.fj-navy-surface {
-  background: linear-gradient(145deg, #10152A 0%, #161D38 100%);
-  color: #F8FAFC;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-}
+  .brand-primary-text {
+    color: var(--brand-primary);
+  }
 
-/* Dynamic Client Brand Accents */
-.brand-gradient {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
-}
-
-.brand-primary-bg {
-  background-color: var(--brand-primary);
-}
-
-.brand-primary-text {
-  color: var(--brand-primary);
-}
-
-.brand-ring-active {
-  box-shadow: 0 0 0 2px var(--brand-primary);
+  .brand-ring-active {
+    box-shadow: 0 0 0 2px var(--brand-primary);
+  }
 }
 
 /* Smooth Page & View Transitions */

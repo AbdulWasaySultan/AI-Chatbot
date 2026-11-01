@@ -88,13 +88,15 @@ function getBusinessHours(tenant) {
   const formattedLines = [];
 
   for (const day of days) {
-    if (hours[day]) {
+    // Skip days that were never filled in (an empty profile has { open: '', close: '' }).
+    const d = hours[day];
+    if (d && (d.closed === true || (d.open && d.close))) {
       result.schedule[day] = hours[day];
       const dayLabel = day.charAt(0).toUpperCase() + day.slice(1);
       if (hours[day].closed) {
         formattedLines.push(`${dayLabel}: Closed`);
       } else {
-        formattedLines.push(`${dayLabel}: ${hours[day].open || '?'} - ${hours[day].close || '?'}`);
+        formattedLines.push(`${dayLabel}: ${hours[day].open} - ${hours[day].close}`);
       }
     }
   }
@@ -132,14 +134,20 @@ function getContactInfo(tenant) {
     return { available: false, reason: 'Contact information has not been configured.' };
   }
 
-  return {
-    available: true,
-    primary: bp.contacts.primary || null,
-    departments: bp.contacts.departments || [],
-    escalation: bp.contacts.escalation || null,
-    emergencyContact: bp.contacts.emergencyContact || null,
-    fallback: bp.contacts.fallback || null,
+  // A contact only counts if it has a way to reach someone (empty profiles have blank fields).
+  const usable = (c) => (c && (c.phone || c.email) ? c : null);
+  const result = {
+    available: false,
+    primary: usable(bp.contacts.primary),
+    departments: (bp.contacts.departments || []).filter((d) => d && (d.phone || d.email)),
+    escalation: usable(bp.contacts.escalation),
+    emergencyContact: usable(bp.contacts.emergencyContact),
+    fallback: usable(bp.contacts.fallback),
   };
+  result.available = !!(result.primary || result.departments.length || result.escalation ||
+    result.emergencyContact || result.fallback);
+  if (!result.available) result.reason = 'Contact information has not been configured.';
+  return result;
 }
 
 /**

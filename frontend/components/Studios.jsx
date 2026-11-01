@@ -1,11 +1,16 @@
-﻿'use client';
+'use client';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Icon, Sparkline } from './Icons';
 /* ==========================================================================
-   FJ-TECH | INTELLIGENT AI COMMAND CENTER â€” FEATURE STUDIOS (views.js)
+   FJ-TECH | INTELLIGENT AI COMMAND CENTER — FEATURE STUDIOS (views.js)
    ========================================================================== */
 
 
+
+// Each test conversation gets its own server-side session, so separate chats never share state
+// (previously every visitor shared one "default" session per agent).
+const newSessionKey = () =>
+  globalThis.crypto?.randomUUID?.() ?? `s-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 const VOICE_PROVIDERS = [
   {
@@ -109,7 +114,7 @@ function OverviewView({
     {
       title: 'Active AI Workforce',
       value: `${allAgents.length} Agents`,
-      sub: `${voiceAgentsCount} Voice Receptionists â€¢ ${chatAgentsCount} Web Chatbots`,
+      sub: `${voiceAgentsCount} Voice Receptionists • ${chatAgentsCount} Web Chatbots`,
       trend: '100% Online',
       icon: 'bot',
       badgeBg: 'bg-[#EEEAFE] text-[#635BFF] dark:bg-indigo-500/15 dark:text-indigo-300',
@@ -187,7 +192,7 @@ function OverviewView({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium text-cyan-300">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>FJ-TECH INTELLIGENT AI COMMAND CENTER â€¢ {formattedDate}</span>
+              <span>FJ-TECH INTELLIGENT AI COMMAND CENTER • {formattedDate}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               {greetingTime}! Your AI workforce is ready.
@@ -224,6 +229,9 @@ function OverviewView({
       </div>
 
       {/* 2. 6-Card Executive KPI Grid */}
+      <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 -mb-2">
+        Demo data — these figures and trends are sample values, not real measurements.
+      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {kpiCards.map((card, idx) => (
           <div key={idx} className="fj-card fj-card-hover p-5 flex flex-col justify-between gap-4">
@@ -265,7 +273,7 @@ function OverviewView({
             <div>
               <h2 className="text-base font-extrabold">Voice Calls vs. Chatbot Interactions</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Omnichannel throughput across {tenants.length} client workspaces
+                Sample data for illustration — not real traffic
               </p>
             </div>
 
@@ -381,7 +389,7 @@ function OverviewView({
                           )}
                         </div>
                         <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 block truncate">
-                          {t.domain} â€¢ {(t.agents || []).length} agents
+                          {t.domain} • {(t.agents || []).length} agents
                         </span>
                       </div>
                     </div>
@@ -415,7 +423,7 @@ function OverviewView({
             {/* Active Workspace Agents List */}
             <div className="mt-4 space-y-2.5">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                {activeTenant?.brandName} â€” Deployed Agents
+                {activeTenant?.brandName} — Deployed Agents
               </div>
               {(activeTenant?.agents || []).length === 0 ? (
                 <div className="fj-subcard p-4 text-xs text-slate-500 text-center">
@@ -440,7 +448,7 @@ function OverviewView({
                       <div className="min-w-0">
                         <h4 className="text-xs sm:text-sm font-bold truncate">{agent.name}</h4>
                         <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 block truncate">
-                          {agent.phoneNumber} â€¢ {agent.avgLatencyMs || 350}ms
+                          {agent.phoneNumber} • {agent.avgLatencyMs || 350}ms
                         </span>
                       </div>
                     </div>
@@ -539,6 +547,11 @@ function VoiceStudioView({
   // Live Voice Tester State
   const [orbState, setOrbState] = useState('idle'); // 'idle' | 'listening' | 'processing' | 'speaking'
   const [transcript, setTranscript] = useState([]);
+  const sessionKeyRef = useRef(newSessionKey());
+  const resetTranscript = (initialLog) => {
+    sessionKeyRef.current = newSessionKey();
+    setTranscript(initialLog);
+  };
   const [callerInput, setCallerInput] = useState('');
   const [lastTelemetry, setLastTelemetry] = useState(null);
 
@@ -618,12 +631,12 @@ function VoiceStudioView({
     const openMsg =
       agent.greeting ||
       `Thank you for calling ${activeTenant?.brandName}. This is ${agent.name}. How can I help you today?`;
-    setTranscript([
+    resetTranscript([
       {
         id: 'v-init',
         role: 'agent',
         text: openMsg,
-        meta: 'Simulated Voice Greeting â€¢ Ready'
+        meta: 'Simulated Voice Greeting • Ready'
       }
     ]);
     setLastTelemetry({
@@ -652,7 +665,8 @@ function VoiceStudioView({
           agentId: selectedVoiceAgent.id,
           userMessage: text,
           mode: 'voice',
-          callHistory: [...transcript, userTurn]
+          callHistory: [...transcript, userTurn],
+          sessionKey: sessionKeyRef.current
         })
       });
       const data = await res.json();
@@ -663,7 +677,7 @@ function VoiceStudioView({
             id: `a-${Date.now()}`,
             role: 'agent',
             text: data.reply,
-            meta: `Intent: ${data.intentDetected} (${Math.round(data.confidence * 100)}%) â€¢ ${data.latencyMs}ms`
+            meta: `Intent: ${data.intentDetected} (${Math.round(data.confidence * 100)}%) • ${data.latencyMs}ms`
           }
         ]);
         setLastTelemetry({
@@ -721,7 +735,7 @@ function VoiceStudioView({
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#635BFF]">
             <Icon name="phone" size={14} />
-            <span>AI Voice Agent Studio â€¢ {activeTenant?.brandName}</span>
+            <span>AI Voice Agent Studio • {activeTenant?.brandName}</span>
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight mt-1">
             Neural Voice Receptionists &amp; Call Agents
@@ -758,7 +772,7 @@ function VoiceStudioView({
               mode === 'test' ? 'bg-[#635BFF] text-white shadow' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            ðŸŽ™ï¸ Interactive Voice Simulator
+            🎙️ Interactive Voice Simulator
           </button>
         </div>
       </div>
@@ -1083,7 +1097,7 @@ function VoiceStudioView({
               <div className="fj-subcard p-5 space-y-3 text-xs">
                 <div className="flex justify-between border-b border-slate-200 dark:border-white/10 pb-2">
                   <span className="text-slate-500">Agent Name:</span>
-                  <span className="font-bold">{agentName || '(Required â€” Step 1)'}</span>
+                  <span className="font-bold">{agentName || '(Required — Step 1)'}</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-200 dark:border-white/10 pb-2">
                   <span className="text-slate-500">Client Workspace:</span>
@@ -1100,7 +1114,7 @@ function VoiceStudioView({
                 <div>
                   <span className="text-slate-500 block mb-1">System Instructions:</span>
                   <p className="p-3 rounded-lg bg-white dark:bg-black/20 text-slate-700 dark:text-slate-300">
-                    {systemPrompt || '(Required â€” Step 3)'}
+                    {systemPrompt || '(Required — Step 3)'}
                   </p>
                 </div>
               </div>
@@ -1114,7 +1128,7 @@ function VoiceStudioView({
               onClick={() => (step > 1 ? setStep(step - 1) : setMode('list'))}
               className="px-4 py-2.5 rounded-xl fj-subcard text-xs font-bold"
             >
-              {step > 1 ? 'â† Previous Step' : 'Cancel'}
+              {step > 1 ? '← Previous Step' : 'Cancel'}
             </button>
 
             {step < 5 ? (
@@ -1123,7 +1137,7 @@ function VoiceStudioView({
                 onClick={() => setStep(step + 1)}
                 className="px-6 py-2.5 rounded-xl bg-[#635BFF] hover:bg-[#5249e6] text-white text-xs font-bold shadow"
               >
-                Continue to Step {step + 1} â†’
+                Continue to Step {step + 1} →
               </button>
             ) : (
               <button
@@ -1147,7 +1161,7 @@ function VoiceStudioView({
           <div className="lg:col-span-5 fj-navy-surface rounded-2xl p-6 flex flex-col justify-between min-h-[520px] shadow-2xl">
             <div className="flex items-center justify-between gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30 text-[11px] font-bold">
-                <span>âš¡ Simulated Voice Sandbox (Not PSTN Call)</span>
+                <span>⚡ Simulated Voice Sandbox (Not PSTN Call)</span>
               </span>
               <select
                 value={selectedVoiceAgent?.id || ''}
@@ -1179,18 +1193,18 @@ function VoiceStudioView({
               <div className="mt-5">
                 <span className="text-xs uppercase tracking-widest font-mono text-cyan-300 block">
                   {orbState === 'listening'
-                    ? 'ðŸ”´ Listening to Microphone...'
+                    ? '🔴 Listening to Microphone...'
                     : orbState === 'processing'
-                    ? 'âš¡ Neural Engine Processing...'
+                    ? '⚡ Neural Engine Processing...'
                     : orbState === 'speaking'
-                    ? 'ðŸ”Š Agent Speaking Response...'
-                    : 'â— Ready for Voice Utterance'}
+                    ? '🔊 Agent Speaking Response...'
+                    : '● Ready for Voice Utterance'}
                 </span>
                 <h3 className="text-lg font-extrabold text-white mt-1">
                   {selectedVoiceAgent?.name || 'Select a Voice Agent'}
                 </h3>
                 <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  {selectedVoiceAgent?.voiceId} â€¢ {selectedVoiceAgent?.phoneNumber}
+                  {selectedVoiceAgent?.voiceId} • {selectedVoiceAgent?.phoneNumber}
                 </p>
               </div>
 
@@ -1372,6 +1386,11 @@ function ChatbotStudioView({
 
   // Two-panel playground state
   const [chatLog, setChatLog] = useState([]);
+  const sessionKeyRef = useRef(newSessionKey());
+  const resetChatLog = (initialLog) => {
+    sessionKeyRef.current = newSessionKey();
+    setChatLog(initialLog);
+  };
   const [msgInput, setMsgInput] = useState('');
   const [typing, setTyping] = useState(false);
   const [metrics, setMetrics] = useState({ intent: 'ready', confidence: 0.98, latencyMs: 240 });
@@ -1382,7 +1401,7 @@ function ChatbotStudioView({
     setSelectedBot(chosen);
     setEmbedChannel(`Embedded on ${activeTenant?.domain || 'clientwebsite.com'}`);
     if (chosen) {
-      setChatLog([
+      resetChatLog([
         {
           id: 'c-init',
           role: 'agent',
@@ -1442,7 +1461,8 @@ function ChatbotStudioView({
           agentId: selectedBot.id,
           userMessage: text,
           mode: 'chat',
-          callHistory: [...chatLog, userEntry]
+          callHistory: [...chatLog, userEntry],
+          sessionKey: sessionKeyRef.current
         })
       });
       const data = await res.json();
@@ -1479,7 +1499,7 @@ function ChatbotStudioView({
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#21C8D8]">
             <Icon name="bot" size={15} />
-            <span>AI Chatbot Studio â€¢ {activeTenant?.brandName}</span>
+            <span>AI Chatbot Studio • {activeTenant?.brandName}</span>
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight mt-1">
             Omnichannel Website &amp; WhatsApp Chatbots
@@ -1493,7 +1513,7 @@ function ChatbotStudioView({
               tab === 'playground' ? 'bg-[#635BFF] text-white shadow' : 'text-slate-500'
             }`}
           >
-            ðŸ’¬ Two-Panel Live Playground
+            💬 Two-Panel Live Playground
           </button>
           <button
             onClick={() => setTab('cards')}
@@ -1530,7 +1550,7 @@ function ChatbotStudioView({
                     const found = (activeTenant?.agents || []).find((a) => a.id === e.target.value);
                     if (found) {
                       setSelectedBot(found);
-                      setChatLog([
+                      resetChatLog([
                         {
                           id: `init-${Date.now()}`,
                           role: 'agent',
@@ -1544,7 +1564,7 @@ function ChatbotStudioView({
                 >
                   {(activeTenant?.agents || []).map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.type === 'chatbot' ? 'ðŸ’¬' : 'ðŸ“ž'} {a.name}
+                      {a.type === 'chatbot' ? '💬' : '📞'} {a.name}
                     </option>
                   ))}
                 </select>
@@ -1615,14 +1635,14 @@ function ChatbotStudioView({
                   <h3 className="text-sm font-extrabold">{selectedBot?.name}</h3>
                   <span className="text-[11px] opacity-90 flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-                    {activeTenant?.brandName} â€¢ Instant AI Concierge
+                    {activeTenant?.brandName} • Instant AI Concierge
                   </span>
                 </div>
               </div>
 
               <button
                 onClick={() =>
-                  setChatLog([
+                  resetChatLog([
                     {
                       id: `clear-${Date.now()}`,
                       role: 'agent',
@@ -1662,9 +1682,9 @@ function ChatbotStudioView({
                         <span>{m.time}</span>
                         {m.intent && (
                           <>
-                            <span>â€¢</span>
+                            <span>•</span>
                             <span className="text-[#635BFF] dark:text-indigo-300">{m.intent}</span>
-                            <span>â€¢</span>
+                            <span>•</span>
                             <span>{m.latencyMs}ms</span>
                           </>
                         )}
@@ -1773,7 +1793,7 @@ function ChatbotStudioView({
                   }}
                   className="px-4 py-2 rounded-xl bg-[#635BFF] text-white text-xs font-bold"
                 >
-                  Open in Playground â†’
+                  Open in Playground →
                 </button>
               </div>
             </div>
@@ -1799,7 +1819,7 @@ function ChatbotStudioView({
                 }}
                 className="text-xs font-bold text-[#635BFF] hover:underline"
               >
-                âœ¨ Auto-Fill Template
+                ✨ Auto-Fill Template
               </button>
             </div>
 
@@ -1856,7 +1876,7 @@ function ChatbotStudioView({
               disabled={isSaving}
               className="brand-gradient text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg"
             >
-              {isSaving ? 'Deploying Chatbot...' : 'ðŸš€ Deploy Website Chatbot'}
+              {isSaving ? 'Deploying Chatbot...' : '🚀 Deploy Website Chatbot'}
             </button>
           </form>
 
@@ -1907,6 +1927,11 @@ function PlaygroundView({
   const [mode, setMode] = useState(initialAgent?.type || agents[0]?.type || 'voice');
   const [ttsOn, setTtsOn] = useState(true);
   const [messages, setMessages] = useState([]);
+  const sessionKeyRef = useRef(newSessionKey());
+  const resetMessages = (initialLog) => {
+    sessionKeyRef.current = newSessionKey();
+    setMessages(initialLog);
+  };
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(true);
@@ -1917,7 +1942,7 @@ function PlaygroundView({
     setSelectedAgent(chosen);
     if (chosen) {
       setMode(chosen.type);
-      setMessages([
+      resetMessages([
         {
           id: 'pg-init',
           role: 'agent',
@@ -1963,7 +1988,8 @@ function PlaygroundView({
           agentId: selectedAgent.id,
           userMessage: text,
           mode,
-          callHistory: [...messages, userMsg]
+          callHistory: [...messages, userMsg],
+          sessionKey: sessionKeyRef.current
         })
       });
       const data = await res.json();
@@ -1975,7 +2001,7 @@ function PlaygroundView({
             id: `a-${Date.now()}`,
             role: 'agent',
             text: data.reply,
-            meta: `${data.intentDetected} (${Math.round(data.confidence * 100)}%) â€¢ ${data.latencyMs}ms`
+            meta: `${data.intentDetected} (${Math.round(data.confidence * 100)}%) • ${data.latencyMs}ms`
           }
         ]);
         setLastWebhookData(data);
@@ -2026,7 +2052,7 @@ function PlaygroundView({
           >
             {agents.map((a) => (
               <option key={a.id} value={a.id} className="text-slate-900">
-                {a.type === 'voice' ? 'ðŸ“ž' : 'ðŸ’¬'} {a.name}
+                {a.type === 'voice' ? '📞' : '💬'} {a.name}
               </option>
             ))}
           </select>
@@ -2039,7 +2065,7 @@ function PlaygroundView({
                 mode === 'voice' ? 'bg-[#635BFF] text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              ðŸ“ž Voice Mode
+              📞 Voice Mode
             </button>
             <button
               onClick={() => setMode('chatbot')}
@@ -2047,7 +2073,7 @@ function PlaygroundView({
                 mode === 'chatbot' ? 'bg-[#21C8D8] text-slate-950' : 'text-slate-400 hover:text-white'
               }`}
             >
-              ðŸ’¬ Chat Mode
+              💬 Chat Mode
             </button>
           </div>
 
@@ -2062,7 +2088,7 @@ function PlaygroundView({
                 : 'bg-white/5 text-slate-400 border-white/10'
             }`}
           >
-            {ttsOn ? 'ðŸ”Š Audio On' : 'ðŸ”‡ Audio Muted'}
+            {ttsOn ? '🔊 Audio On' : '🔇 Audio Muted'}
           </button>
 
           <button
@@ -2087,7 +2113,7 @@ function PlaygroundView({
             <button
               onClick={() => {
                 if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                setMessages([
+                resetMessages([
                   {
                     id: `rst-${Date.now()}`,
                     role: 'agent',
@@ -2098,7 +2124,7 @@ function PlaygroundView({
               }}
               className="text-xs font-bold text-slate-400 hover:text-[#635BFF]"
             >
-              â†º Reset Transcript
+              ↺ Reset Transcript
             </button>
           </div>
 
@@ -2337,7 +2363,7 @@ function WorkspacesView({
                       : 'bg-[#635BFF] hover:bg-[#5249e6] text-white shadow'
                   }`}
                 >
-                  {isCurrent ? 'âœ“ Active Workspace' : 'Switch to Workspace'}
+                  {isCurrent ? '✓ Active Workspace' : 'Switch to Workspace'}
                 </button>
                 <button
                   onClick={() => {
@@ -2429,7 +2455,7 @@ function BrandingStudioView({ activeTenant, onBrandingSaved, showToast }) {
           White-Label Design System
         </span>
         <h1 className="text-2xl font-extrabold tracking-tight mt-0.5">
-          Branding Studio â€” {activeTenant?.brandName}
+          Branding Studio — {activeTenant?.brandName}
         </h1>
       </div>
 
@@ -2624,7 +2650,7 @@ function BrandingStudioView({ activeTenant, onBrandingSaved, showToast }) {
                   className="px-2.5 py-1 rounded-full text-white font-bold text-[11px]"
                   style={{ backgroundColor: primaryColor }}
                 >
-                  â— 100% Online
+                  ● 100% Online
                 </span>
               </div>
               <div className="fj-subcard p-3.5 text-xs">
@@ -2674,6 +2700,12 @@ function SecondaryViews({
 
         <div className="fj-card overflow-hidden">
           <div className="divide-y divide-slate-100 dark:divide-white/10">
+            {recentEvents.length === 0 && (
+              <div className="p-6 text-sm text-slate-500">
+                No conversations yet in this browser session. Conversations are not stored yet, so
+                this list only shows test chats you run here.
+              </div>
+            )}
             {recentEvents.map((ev) => (
               <div key={ev.id} className="p-4 sm:p-5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5 min-w-0">
@@ -2735,21 +2767,26 @@ function SecondaryViews({
   }
 
   if (view === 'integrations') {
+    // None of these are integrated yet. Show the truth instead of "Connected".
     const integrationsList = [
-      { name: 'Twilio Programmable Voice & SIP', desc: 'Inbound/outbound PSTN voice trunks for AI phone agents', status: 'Connected' },
-      { name: 'ElevenLabs Neural TTS v2.5', desc: 'Ultra-low latency expressive voice synthesis', status: 'Connected' },
-      { name: 'OpenAI Realtime 4o Engine', desc: 'Sub-second conversational reasoning & intent classification', status: 'Connected' },
-      { name: 'Deepgram Aura STT/TTS', desc: 'Enterprise speech recognition & medical/realty vocabulary', status: 'Connected' },
-      { name: 'CRM & Calendar Booking Webhook', desc: 'Syncs captured leads and appointment slots in real time', status: 'Active' },
-      { name: 'White-Label Web Widget CDN', desc: 'Embeddable JS snippet for client websites', status: 'Active' }
+      { name: 'Email notifications', desc: 'Alerts staff about emergencies, callbacks and handoffs', status: 'Planned' },
+      { name: 'Google Calendar & Cal.com', desc: 'Real availability and confirmed bookings', status: 'Planned' },
+      { name: 'Outbound webhooks', desc: 'Send leads and actions to Zapier, Make or your own systems', status: 'Planned' },
+      { name: 'Slack', desc: 'Post urgent customer requests to a team channel', status: 'Planned' },
+      { name: 'HubSpot CRM', desc: 'Sync captured leads', status: 'Planned' },
+      { name: 'Website chat widget', desc: 'Embeddable snippet for client websites', status: 'Planned' }
     ];
     return (
       <div className="space-y-6 animate-view">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-[#635BFF]">
-            Connected Ecosystem
+            Integrations
           </span>
-          <h1 className="text-2xl font-extrabold mt-0.5">Telephony, LLM &amp; CRM Integrations</h1>
+          <h1 className="text-2xl font-extrabold mt-0.5">Integrations</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            No integrations are connected yet. Until they are, agent requests (callbacks, bookings,
+            complaints) are recorded but not sent anywhere automatically.
+          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {integrationsList.map((intg, i) => (
@@ -2757,17 +2794,17 @@ function SecondaryViews({
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-extrabold">{intg.name}</span>
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#DDF8EE] text-emerald-700">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300">
                     {intg.status}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">{intg.desc}</p>
               </div>
               <button
-                onClick={() => showToast(`${intg.name} is verified and active.`)}
-                className="py-2 px-3 rounded-xl fj-subcard text-xs font-bold hover:border-[#635BFF]"
+                disabled
+                className="py-2 px-3 rounded-xl fj-subcard text-xs font-bold text-slate-400 cursor-not-allowed"
               >
-                Test Connection
+                Not available yet
               </button>
             </div>
           ))}
@@ -2796,7 +2833,7 @@ function SecondaryViews({
         </div>
         <div className="flex justify-between py-2">
           <span className="text-slate-500">API Backend Status</span>
-          <span className="font-mono font-bold text-emerald-600">ONLINE (Express Multi-Tenant Engine)</span>
+          <span className="font-mono font-bold">Express API (in-memory demo data — resets on restart)</span>
         </div>
       </div>
     </div>

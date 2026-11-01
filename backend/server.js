@@ -3,7 +3,8 @@ const cors = require('cors');
 const aiEngine = require('./engine');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// API_PORT keeps the API off Next.js's default port (3000) during local development.
+const PORT = process.env.API_PORT || process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
@@ -522,7 +523,8 @@ if (require.main === module) {
     console.log(`\n==================================================================`);
     console.log(`🚀 FJ-Tech Solutions White-Label AI Platform is LIVE!`);
     console.log(`📂 Backend API Directory : ${__dirname}`);
-    console.log(`🌐 Local Dashboard URL   : http://localhost:${PORT}`);
+    console.log(`🌐 API URL               : http://localhost:${PORT}/api`);
+    console.log(`🖥️  Dashboard (Next.js)   : http://localhost:3000`);
     console.log(`==================================================================\n`);
   });
 }

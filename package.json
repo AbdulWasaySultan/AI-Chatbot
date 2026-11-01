@@ -2,11 +2,18 @@
   "name": "fj-tech-solutions-platform",
   "version": "2.0.0",
   "description": "FJ-Tech Solutions - Intelligent AI Command Center",
-  "main": "server.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "next dev",
+    "dev:api": "node --watch backend/server.js",
+    "build": "next build",
     "start": "next start",
-    "build": "next build"
+    "start:api": "node backend/server.js",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -16,5 +23,18 @@
     "next": "^16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.3",
+    "globals": "^14.0.0",
+    "postcss": "^8.5.32",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.3",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

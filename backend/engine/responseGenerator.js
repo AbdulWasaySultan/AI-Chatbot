@@ -1026,10 +1026,11 @@ async function finalizeAppointment(session, aptData, tenant, agent) {
   stateManager.resolveWorkflow(session, 'appointment_booked');
 
   return {
-    reply: `Your appointment has been booked!\n\n📅 **Date:** ${aptData.date || 'To be confirmed'}\n⏰ **Time:** ${aptData.time || 'To be confirmed'}\n👤 **Name:** ${aptData.customerName}\n📍 **With:** ${tenant.brandName}\n${toolResult.data?.bookingId ? `📋 **Reference:** ${toolResult.data.bookingId}` : ''}\n\nYou'll receive a confirmation shortly. Is there anything else I can help with?`,
+    // No calendar is connected, so the tool only records a request. Never say "booked".
+    reply: `Thanks, ${aptData.customerName}. I've sent your appointment request to the ${tenant.brandName} team — it isn't confirmed yet.\n\n📅 **Requested date:** ${aptData.date || 'To be confirmed'}\n⏰ **Requested time:** ${aptData.time || 'To be confirmed'}\n${toolResult.data?.bookingId ? `📋 **Request reference:** ${toolResult.data.bookingId}\n` : ''}\nThe team will contact you to confirm the time. Is there anything else I can help with?`,
     intent: 'appointment_scheduling',
     toolTriggered: 'book_appointment',
-    entities: { appointmentBooked: true, bookingId: toolResult.data?.bookingId },
+    entities: { appointmentRequested: true, appointmentConfirmed: false, bookingId: toolResult.data?.bookingId },
     suggestedActions: ['What should I bring?', 'Where is your office?', 'That is all, thank you'],
   };
 }

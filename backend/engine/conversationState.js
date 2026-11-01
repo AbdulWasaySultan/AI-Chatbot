@@ -215,7 +215,8 @@ function cleanupExpiredSessions() {
 }
 
 // Run cleanup every 5 minutes
-setInterval(cleanupExpiredSessions, 5 * 60 * 1000);
+// unref() so this timer never keeps a process (tests, scripts) alive on its own.
+setInterval(cleanupExpiredSessions, 5 * 60 * 1000).unref();
 
 /**
  * Reset a session (for testing)

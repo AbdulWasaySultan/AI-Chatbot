@@ -1,0 +1,7 @@
+.next
+node_modules
+backend/node_modules
+coverage
+package-lock.json
+backend/package-lock.json
+plans

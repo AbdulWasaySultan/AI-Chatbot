@@ -5,7 +5,8 @@
  * Emergency escalation, location vs hours, complaints, human handoff,
  * multi-intent, conversation continuity, tenant isolation, etc.
  * 
- * Run: node backend/tests/agentEngine.test.js
+ * Run directly: node backend/tests/agentEngine.scenarios.js
+ * Also run by Vitest through agentEngine.test.mjs.
  */
 
 const { processMessage, detectIntents, stateManager } = require('../engine');
@@ -14,23 +15,29 @@ const { processMessage, detectIntents, stateManager } = require('../engine');
 let passed = 0;
 let failed = 0;
 let total = 0;
+const results = [];
+const verbose = require.main === module;
+const log = (...args) => { if (verbose) console.log(...args); };
 
 function assert(condition, testName, details = '') {
   total++;
+  results.push({ section: currentSection, name: testName, ok: !!condition, details });
   if (condition) {
     passed++;
-    console.log(`  ✅ ${testName}`);
+    log(`  ✅ ${testName}`);
   } else {
     failed++;
-    console.log(`  ❌ ${testName}`);
-    if (details) console.log(`     → ${details}`);
+    log(`  ❌ ${testName}`);
+    if (details) log(`     → ${details}`);
   }
 }
 
+let currentSection = '';
 function section(name) {
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`📋 ${name}`);
-  console.log('='.repeat(60));
+  currentSection = name;
+  log(`\n${'='.repeat(60)}`);
+  log(`📋 ${name}`);
+  log('='.repeat(60));
 }
 
 // Seed tenant for testing
@@ -114,8 +121,8 @@ const testAgent2 = {
 };
 
 async function runTests() {
-  console.log('\n🧪 AI Agent Engine — Automated Test Suite');
-  console.log('Starting tests...\n');
+  log('\n🧪 AI Agent Engine — Automated Test Suite');
+  log('Starting tests...\n');
 
   // ================================================
   // TEST 1: Emergency Escalation
@@ -451,19 +458,25 @@ async function runTests() {
   // ================================================
   // RESULTS
   // ================================================
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`\n📊 TEST RESULTS: ${passed}/${total} passed, ${failed} failed\n`);
+  log(`\n${'='.repeat(60)}`);
+  log(`\n📊 TEST RESULTS: ${passed}/${total} passed, ${failed} failed\n`);
   
   if (failed === 0) {
-    console.log('🎉 ALL TESTS PASSED!\n');
+    log('🎉 ALL TESTS PASSED!\n');
   } else {
-    console.log(`⚠️  ${failed} test(s) need attention.\n`);
+    log(`⚠️  ${failed} test(s) need attention.\n`);
   }
   
-  process.exit(failed > 0 ? 1 : 0);
+  return { passed, failed, total, results };
 }
 
-runTests().catch(err => {
-  console.error('Test runner failed:', err);
-  process.exit(1);
-});
+module.exports = { runTests };
+
+if (require.main === module) {
+  runTests()
+    .then(({ failed }) => process.exit(failed > 0 ? 1 : 0))
+    .catch((err) => {
+      console.error('Test runner failed:', err);
+      process.exit(1);
+    });
+}

@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Icon } from './Icons';
 import { OverviewView, VoiceStudioView, ChatbotStudioView, PlaygroundView, WorkspacesView, BrandingStudioView, SecondaryViews } from './Studios';
 /* ==========================================================================
-   FJ-TECH | INTELLIGENT AI COMMAND CENTER â€” NEXT.JS 15 COMPONENT SHELL
+   FJ-TECH | INTELLIGENT AI COMMAND CENTER — NEXT.JS 15 COMPONENT SHELL
    ========================================================================== */
 
 
@@ -222,29 +222,8 @@ function CommandCenterApp() {
   const [tenants, setTenants] = useState([]);
   const [activeTenant, setActiveTenant] = useState(null);
   const [playgroundAgent, setPlaygroundAgent] = useState(null);
-  const [recentEvents, setRecentEvents] = useState([
-    {
-      id: 'ev-1',
-      type: 'voice',
-      title: 'Sophia - 24/7 Patient Receptionist handled inbound call',
-      subtitle: 'Intent: appointment_booking (98% confidence) â€¢ 390ms latency',
-      time: '2m ago'
-    },
-    {
-      id: 'ev-2',
-      type: 'chat',
-      title: 'Apex Web Concierge verified Invisalign pricing inquiry',
-      subtitle: 'Intent: pricing_and_packages â€¢ Dispatched consultation link',
-      time: '9m ago'
-    },
-    {
-      id: 'ev-3',
-      type: 'deploy',
-      title: 'White-label CNAME verified for ai.apexdentalstudio.com',
-      subtitle: 'SSL certificate & custom brand palette active',
-      time: '24m ago'
-    }
-  ]);
+  // Activity from this browser session only (the three hardcoded sample events were removed).
+  const [recentEvents, setRecentEvents] = useState([]);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -350,7 +329,7 @@ function CommandCenterApp() {
       },
       ...prev
     ]);
-    showToast(`ðŸš€ Deployed "${newAgent.name}"!`);
+    showToast(`🚀 Deployed "${newAgent.name}"!`);
   };
 
   const handleSimulationEvent = (agent, userText, apiData) => {
@@ -375,7 +354,7 @@ function CommandCenterApp() {
         id: `ev-${Date.now()}`,
         type: agent.type,
         title: `${agent.name}: "${userText.slice(0, 42)}..."`,
-        subtitle: `Intent: ${apiData.intentDetected} (${Math.round(apiData.confidence * 100)}%) â€¢ ${apiData.latencyMs}ms`,
+        subtitle: `Intent: ${apiData.intentDetected} (${Math.round(apiData.confidence * 100)}%) • ${apiData.latencyMs}ms`,
         time: 'Just now'
       },
       ...prev.slice(0, 14)
@@ -640,7 +619,9 @@ function CommandCenterApp() {
                 title="Notifications"
               >
                 <Icon name="bell" size={17} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
+                {recentEvents.length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
+                )}
               </button>
               {notificationsOpen && (
                 <div
@@ -648,10 +629,13 @@ function CommandCenterApp() {
                   className="absolute right-0 mt-2 w-80 fj-card p-4 shadow-2xl z-50 space-y-2.5"
                 >
                   <div className="flex items-center justify-between text-xs font-extrabold border-b border-slate-100 dark:border-white/10 pb-2">
-                    <span>Live Telemetry Alerts</span>
+                    <span>Recent activity (this session)</span>
                     <span className="text-[10px] text-[#635BFF]">{recentEvents.length} events</span>
                   </div>
                   <div className="space-y-2 max-h-60 overflow-y-auto custom-scroll">
+                    {recentEvents.length === 0 && (
+                      <div className="text-xs text-slate-500">No activity yet. Test an agent to see events here.</div>
+                    )}
                     {recentEvents.slice(0, 4).map((ev) => (
                       <div key={ev.id} className="text-xs fj-subcard p-2.5">
                         <div className="font-bold truncate">{ev.title}</div>
@@ -744,7 +728,7 @@ function CommandCenterApp() {
                 setTenants((prev) =>
                   prev.map((t) => (t.id === updatedTenant.id ? updatedTenant : t))
                 );
-                showToast(`âœ¨ Published white-label branding for ${updatedTenant.brandName}`);
+                showToast(`✨ Published white-label branding for ${updatedTenant.brandName}`);
               }}
               showToast={showToast}
             />
@@ -772,7 +756,7 @@ function CommandCenterApp() {
           setActiveTenant(data.activeTenant);
           setTenants(data.tenants);
           setMasterAgency(data.masterAgency);
-          showToast(`ðŸŽ‰ Created client workspace "${data.activeTenant.brandName}"!`);
+          showToast(`🎉 Created client workspace "${data.activeTenant.brandName}"!`);
         }}
       />
 
