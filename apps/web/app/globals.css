@@ -1,0 +1,209 @@
+/* ==========================================================================
+   FJ-TECH | AI COMMAND CENTER — GLOBAL STYLES
+   Tailwind CSS is compiled at build time (previously loaded from a CDN at runtime).
+   ========================================================================== */
+
+@import 'tailwindcss';
+
+/* Scan the components folder as well as app/. */
+@source '../components';
+
+/* Dark mode is toggled with the `dark` class on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* Tailwind v3 defaults the UI was built against. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :root {
+    /* Dynamic Client White-Label Tokens (Updated via Branding Studio / Tenant Switch) */
+    --brand-primary: #635BFF;
+    --brand-accent: #21C8D8;
+
+    /* FJ-Tech Core Palette (Light Mode Default) */
+    --bg-canvas: #F7F8FC;
+    --bg-surface: #FFFFFF;
+    --bg-subtle: #F1F3F9;
+    --bg-navy: #10152A;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+    --border-subtle: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --shadow-card: 0 1px 3px rgba(16, 21, 42, 0.04), 0 4px 12px rgba(16, 21, 42, 0.03);
+    --shadow-elevated: 0 10px 30px -5px rgba(16, 21, 42, 0.08), 0 4px 12px -2px rgba(16, 21, 42, 0.04);
+  }
+
+  html.dark {
+    --bg-canvas: #0B0F1E;
+    --bg-surface: #10152A;
+    --bg-subtle: #161D38;
+    --bg-navy: #090C18;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.28);
+    --shadow-elevated: 0 16px 36px -6px rgba(0, 0, 0, 0.45);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  /* Surface & Card Primitives */
+  .fj-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+    border-radius: 1rem;
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.18s ease;
+  }
+
+  .fj-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--border-strong);
+  }
+
+  .fj-subcard {
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.75rem;
+  }
+
+  /* Deep Navy Command Surfaces (Used for AI Voice Orb, Playground & Hero Docks) */
+  .fj-navy-surface {
+    background: linear-gradient(145deg, #10152A 0%, #161D38 100%);
+    color: #F8FAFC;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  /* Dynamic Client Brand Accents */
+  .brand-gradient {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+  }
+
+  .brand-primary-bg {
+    background-color: var(--brand-primary);
+  }
+
+  .brand-primary-text {
+    color: var(--brand-primary);
+  }
+
+  .brand-ring-active {
+    box-shadow: 0 0 0 2px var(--brand-primary);
+  }
+}
+
+/* Smooth Page & View Transitions */
+@keyframes viewEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-view {
+  animation: viewEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Animated Voice Agent Orb & Waveform */
+@keyframes orbPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 91, 255, 0.4), 0 0 35px 6px rgba(33, 200, 216, 0.25);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 14px rgba(99, 91, 255, 0), 0 0 50px 14px rgba(33, 200, 216, 0.45);
+  }
+}
+
+.voice-orb-active {
+  animation: orbPulse 2.2s infinite ease-in-out;
+}
+
+@keyframes soundBar {
+  0%, 100% { transform: scaleY(0.25); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.waveform-bar {
+  animation: soundBar 0.85s ease-in-out infinite;
+  transform-origin: center;
+}
+.waveform-bar:nth-child(2n) { animation-duration: 0.65s; }
+.waveform-bar:nth-child(3n) { animation-duration: 1.05s; }
+.waveform-bar:nth-child(4n) { animation-duration: 0.78s; }
+.waveform-bar:nth-child(5n) { animation-duration: 1.2s; }
+
+/* Typing Indicator Dots */
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.65); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.typing-dot {
+  animation: dotBounce 1.2s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* Respect Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom Scrollbars */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 9999px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.45);
+}

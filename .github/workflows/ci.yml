@@ -17,7 +17,12 @@ jobs:
       - run: npm ci
       - name: Lint
         run: npm run lint
-      - name: Test
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Migrations match the schema
+        working-directory: apps/api
+        run: npx drizzle-kit generate | tee /tmp/drizzle.txt && grep -q "No schema changes" /tmp/drizzle.txt
+      - name: Test (unit, API, row-level security, tenant isolation)
         run: npm test
       - name: Build web app
         run: npm run build

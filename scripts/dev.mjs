@@ -7,11 +7,11 @@ const webPort = process.env.PORT || '3000';
 
 const processes = [
   // The API gets its own port explicitly so an inherited PORT never makes it collide with Next.js.
-  { name: 'api', cmd: 'node', args: ['--watch', 'backend/server.js'], env: { API_PORT: apiPort } },
+  { name: 'api', cmd: 'npm', args: ['run', 'dev', '-w', '@fj/api'], env: { API_PORT: apiPort } },
   {
     name: 'web',
-    cmd: 'npx',
-    args: ['next', 'dev', '-p', webPort],
+    cmd: 'npm',
+    args: ['run', 'dev', '-w', '@fj/web', '--', '-p', webPort],
     env: { BACKEND_URL: process.env.BACKEND_URL || `http://localhost:${apiPort}` },
   },
 ];

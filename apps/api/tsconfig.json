@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "allowJs": false
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "drizzle.config.ts"],
+  "exclude": ["src/legacy/**"]
+}

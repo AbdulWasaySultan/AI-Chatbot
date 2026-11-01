@@ -19,3 +19,6 @@ Thumbs.db
 
 # Hosting
 .vercel
+
+# Local embedded database (PGlite)
+.data/

@@ -1,40 +1,38 @@
 {
-  "name": "fj-tech-solutions-platform",
+  "name": "fj-tech-platform",
   "version": "2.0.0",
-  "description": "FJ-Tech Solutions - Intelligent AI Command Center",
+  "private": true,
+  "description": "FJ-Tech multi-tenant AI agent platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "dev:web": "next dev",
-    "dev:api": "node --watch backend/server.js",
-    "build": "next build",
-    "start": "next start",
-    "start:api": "node backend/server.js",
+    "dev:web": "npm run dev -w @fj/web",
+    "dev:api": "npm run dev -w @fj/api",
+    "build": "npm run build -w @fj/web",
+    "start:web": "npm run start -w @fj/web",
+    "start:api": "npm run start -w @fj/api",
+    "db:generate": "npm run db:generate -w @fj/api",
+    "db:migrate": "npm run db:migrate -w @fj/api",
+    "db:seed": "npm run db:seed -w @fj/api",
     "lint": "eslint .",
+    "typecheck": "npm run typecheck -w @fj/api -w @fj/shared",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "cors": "^2.8.5",
-    "dotenv": "^18.0.9",
-    "express": "^4.21.1",
-    "next": "^16.4.3",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
-  },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^16.4.3",
+    "eslint-config-next": "16.4.3",
     "globals": "^14.0.0",
-    "postcss": "^8.5.32",
     "prettier": "^3.9.10",
-    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
     "vitest": "^5.0.5"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   }
 }
