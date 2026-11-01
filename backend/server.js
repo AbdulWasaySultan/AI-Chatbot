@@ -1,15 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const aiEngine = require('./engine');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(FRONTEND_DIR));
 
 // ==========================================
 // MULTI-TENANT DATA STORE (IN-MEMORY + SEED)
@@ -519,17 +516,12 @@ app.post('/api/sessions/reset', (req, res) => {
   res.json({ message: 'Session reset successfully' });
 });
 
-// Serve frontend/index.html for root and unmatched routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
-});
 
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`\n==================================================================`);
     console.log(`🚀 FJ-Tech Solutions White-Label AI Platform is LIVE!`);
     console.log(`📂 Backend API Directory : ${__dirname}`);
-    console.log(`🎨 Frontend UI Directory : ${FRONTEND_DIR}`);
     console.log(`🌐 Local Dashboard URL   : http://localhost:${PORT}`);
     console.log(`==================================================================\n`);
   });
